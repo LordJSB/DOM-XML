@@ -7,12 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -46,7 +44,7 @@ public class InterfazEscritura extends JFrame {
 	public InterfazEscritura() {
 		setResizable(false);
 		setTitle("Escritura de concesionarios");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 655, 470);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(228, 152, 190));
@@ -61,27 +59,9 @@ public class InterfazEscritura extends JFrame {
 		lblTitulo.setForeground(Color.RED);
 		lblTitulo.setFont(new Font("Malgun Gothic", Font.BOLD, 29));
 
-		JButton btnAnteriorCoche = new JButton("Finalizar concesionario");
-		btnAnteriorCoche.setBounds(384, 380, 245, 35);
-		btnAnteriorCoche.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btnAnteriorCoche.setBackground(Color.PINK);
-		btnAnteriorCoche.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
-
 		JLabel lblModelo = new JLabel("Modelo");
 		lblModelo.setBounds(112, 161, 59, 19);
 		lblModelo.setFont(new Font("Ebrima", Font.BOLD, 14));
-
-		textField_Modelo = new JTextField();
-		textField_Modelo.setBounds(61, 191, 155, 20);
-		textField_Modelo.setColumns(10);
-		contentPane.setLayout(null);
-		contentPane.add(lblTitulo);
-		contentPane.add(lblModelo);
-		contentPane.add(textField_Modelo);
-		contentPane.add(btnAnteriorCoche);
 
 		textField_Marca = new JTextField();
 		textField_Marca.setColumns(10);
@@ -95,14 +75,24 @@ public class InterfazEscritura extends JFrame {
 
 		JButton btnSiguienteCoche = new JButton("Siguiente coche");
 		btnSiguienteCoche.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+	        public void actionPerformed(ActionEvent e) {
+
+	        }
+	    });
 		btnSiguienteCoche.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
 		btnSiguienteCoche.setBackground(Color.PINK);
 		btnSiguienteCoche.setBounds(10, 380, 196, 35);
 		contentPane.add(btnSiguienteCoche);
 
+		JButton btnCreaXML = new JButton("Finalizar concesionario");
+		btnCreaXML.setBounds(372, 380, 257, 35);
+		 btnCreaXML.addActionListener(new ActionListener() {
+		        public void actionPerformed(ActionEvent e) {
+
+		        }
+		    });
+		btnCreaXML.setBackground(Color.PINK);
+		btnCreaXML.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
 		JLabel lblCilindrada = new JLabel("Cilindrada");
 		lblCilindrada.setFont(new Font("Ebrima", Font.BOLD, 14));
 		lblCilindrada.setBounds(471, 161, 78, 19);
@@ -112,5 +102,14 @@ public class InterfazEscritura extends JFrame {
 		textField_Cilindrada.setColumns(10);
 		textField_Cilindrada.setBounds(427, 191, 155, 20);
 		contentPane.add(textField_Cilindrada);
+
+		textField_Modelo = new JTextField();
+		textField_Modelo.setBounds(61, 191, 155, 20);
+		textField_Modelo.setColumns(10);
+		contentPane.setLayout(null);
+		contentPane.add(lblTitulo);
+		contentPane.add(lblModelo);
+		contentPane.add(textField_Modelo);
+		contentPane.add(btnCreaXML);
 	}
 }

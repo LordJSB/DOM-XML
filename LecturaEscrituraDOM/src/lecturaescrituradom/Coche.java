@@ -2,23 +2,23 @@ package lecturaescrituradom;
 
 public class Coche {
 
-	private String concesionario;
+	private int concesionario = 1;
 	private String marca;
 	private String modelo;
 	private double cilindrada;
 
-	public Coche(String concesionario, String marca, String modelo, double cilindrada) {
+	public Coche(int concesionario, String marca, String modelo, double cilindrada) {
 		this.concesionario = concesionario;
 		this.marca = marca;
 		this.modelo = modelo;
 		this.cilindrada = cilindrada;
 	}
 
-	public String getConcesionario() {
+	public int getConcesionario() {
 		return concesionario;
 	}
 
-	public void setConcesionario(String concesionario) {
+	public void setConcesionario(int concesionario) {
 		this.concesionario = concesionario;
 	}
 

@@ -1,7 +1,10 @@
 package lecturaescrituradom;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -94,22 +97,65 @@ public class DOM {
 				NamedNodeMap atributos = nodo.getAttributes();
 				for (int i = 0; i < atributos.getLength(); i++) {
 					Node atributo = atributos.item(i);
-					System.out.println("Atributo: " + atributo.getNodeName() + " = " + atributo.getNodeValue()); // aver donde lo guardo
+					System.out.println("Atributo: " + atributo.getNodeName() + " = " + atributo.getNodeValue());
 				}
 			}
 
 			String texto = nodo.getTextContent().trim();
 			if (!texto.isEmpty()) {
-				System.out.println("Texto: " + texto); // aver donde lo guardo
+				System.out.println("Texto: " + texto);
 			}
 		}
 
 		NodeList hijos = nodo.getChildNodes();
 		for (int i = 0; i < hijos.getLength(); i++) {
 			Node hijo = hijos.item(i);
-			if (hijo.getNodeType() == Node.ELEMENT_NODE) { // aver donde lo guardo
+			if (hijo.getNodeType() == Node.ELEMENT_NODE) {
 				leerNodo(hijo);
 			}
+		}
+	}
+
+	public void crearArchivoXML(List<Coche> coches, String rutaArchivo) {
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.newDocument();
+
+			Element elementoRaiz = doc.createElement("concesionario");
+			doc.appendChild(elementoRaiz);
+
+			for (Coche coche : coches) {
+				Element elementoCoche = doc.createElement("coche");
+				elementoRaiz.appendChild(elementoCoche);
+
+				Attr attrConcesionario = doc.createAttribute("concesionario");
+				attrConcesionario.setValue(String.valueOf(coche.getConcesionario()));
+				elementoCoche.setAttributeNode(attrConcesionario);
+
+				Element elementoMarca = doc.createElement("marca");
+				elementoMarca.appendChild(doc.createTextNode(coche.getMarca()));
+				elementoCoche.appendChild(elementoMarca);
+
+				Element elementoModelo = doc.createElement("modelo");
+				elementoModelo.appendChild(doc.createTextNode(coche.getModelo()));
+				elementoCoche.appendChild(elementoModelo);
+
+				Element elementoCilindrada = doc.createElement("cilindrada");
+				elementoCilindrada.appendChild(doc.createTextNode(String.valueOf(coche.getCilindrada())));
+				elementoCoche.appendChild(elementoCilindrada);
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource fuente = new DOMSource(doc);
+			StreamResult resultado = new StreamResult(new FileOutputStream(rutaArchivo));
+			transformer.transform(fuente, resultado);
+
+			System.out.println("Archivo XML creado exitosamente.");
+
+		} catch (ParserConfigurationException | TransformerException | IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -141,10 +187,10 @@ public class DOM {
 
 						if (tieneHijos.toLowerCase().equals("s")) {
 							insertarElementosHijos(sc, doc, eRaiz);
-						}else if(tieneHijos.toLowerCase().equals("n")) {
+						} else if (tieneHijos.toLowerCase().equals("n")) {
 							System.out.print("\nIngrese el contenido para " + raiz + ": ");
-				            String relleno = sc.nextLine();
-				            eRaiz.appendChild(doc.createTextNode(relleno));
+							String relleno = sc.nextLine();
+							eRaiz.appendChild(doc.createTextNode(relleno));
 						}
 					}
 
@@ -248,6 +294,83 @@ public class DOM {
 				System.out.println("\t" + nombreNodo + ": " + valorNodo);
 			}
 		}
+	}
+
+	public List<Coche> leerCoches() {
+		List<Coche> coches = new ArrayList<>();
+
+		try {
+			if (documento != null) {
+				documento.getDocumentElement().normalize();
+				leerCoches(documento.getDocumentElement(), coches);
+			} else {
+				System.out.println("El documento no ha sido inicializado correctamente.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return coches;
+	}
+
+	private void leerCoches(Node nodo, List<Coche> coches) {
+		int concesionario = 1;
+
+		if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+			if (nodo.getNodeName().equals("concesionario")) {
+				NamedNodeMap atr = nodo.getAttributes();
+				Node concesionarioNodo = atr.getNamedItem("concesionario");
+				concesionario = (concesionarioNodo != null && concesionarioNodo.getNodeValue() != null)
+						? Integer.parseInt(concesionarioNodo.getNodeValue())
+						: 0;
+			} else if (nodo.getNodeName().equals("coche")) {
+				String marca = obtenerValorNodo("marca", nodo);
+				String modelo = obtenerValorNodo("modelo", nodo);
+				double cilindrada = Double.parseDouble(obtenerValorNodo("cilindrada", nodo));
+
+				Coche coche = new Coche(concesionario, marca, modelo, cilindrada);
+				coches.add(coche);
+			}
+		}
+
+		Node siguienteConcesionario = obtenerSiguienteConcesionario(nodo);
+		if (siguienteConcesionario != null) {
+			concesionario++;
+		}
+
+		NodeList hijos = nodo.getChildNodes();
+		for (int i = 0; i < hijos.getLength(); i++) {
+			Node hijo = hijos.item(i);
+			if (hijo.getNodeType() == Node.ELEMENT_NODE) {
+				leerCoches(hijo, coches);
+			}
+		}
+	}
+
+	private Node obtenerSiguienteConcesionario(Node nodo) {
+		Node siguienteConcesionario = null;
+		Node siguiente = nodo.getNextSibling();
+
+		while (siguiente != null) {
+			if (siguiente.getNodeType() == Node.ELEMENT_NODE && siguiente.getNodeName().equals("concesionario")) {
+				siguienteConcesionario = siguiente;
+				break;
+			}
+			siguiente = siguiente.getNextSibling();
+		}
+
+		return siguienteConcesionario;
+	}
+
+	private String obtenerValorNodo(String nombreNodo, Node nodo) {
+		NodeList nodos = nodo.getChildNodes();
+		for (int i = 0; i < nodos.getLength(); i++) {
+			Node hijo = nodos.item(i);
+			if (hijo.getNodeType() == Node.ELEMENT_NODE && hijo.getNodeName().equals(nombreNodo)) {
+				return hijo.getTextContent().trim();
+			}
+		}
+		return "";
 	}
 }
 
