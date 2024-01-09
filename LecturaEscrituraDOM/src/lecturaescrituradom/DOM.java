@@ -1,7 +1,6 @@
 package lecturaescrituradom;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +115,7 @@ public class DOM {
 		}
 	}
 
-	public void crearArchivoXML(List<Coche> coches, String rutaArchivo) {
+	public void creaConcesionarioXML(List<Coche> coches, String nombreArchivo) {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -128,10 +127,6 @@ public class DOM {
 			for (Coche coche : coches) {
 				Element elementoCoche = doc.createElement("coche");
 				elementoRaiz.appendChild(elementoCoche);
-
-				Attr attrConcesionario = doc.createAttribute("concesionario");
-				attrConcesionario.setValue(String.valueOf(coche.getConcesionario()));
-				elementoCoche.setAttributeNode(attrConcesionario);
 
 				Element elementoMarca = doc.createElement("marca");
 				elementoMarca.appendChild(doc.createTextNode(coche.getMarca()));
@@ -149,12 +144,10 @@ public class DOM {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource fuente = new DOMSource(doc);
-			StreamResult resultado = new StreamResult(new FileOutputStream(rutaArchivo));
+			StreamResult resultado = new StreamResult(new File(nombreArchivo));
 			transformer.transform(fuente, resultado);
 
-			System.out.println("Archivo XML creado exitosamente.");
-
-		} catch (ParserConfigurationException | TransformerException | IOException e) {
+		} catch (ParserConfigurationException | TransformerException e) {
 			e.printStackTrace();
 		}
 	}
@@ -199,7 +192,6 @@ public class DOM {
 					DOMSource fuente = new DOMSource(doc);
 					StreamResult resultado = new StreamResult("resultado.xml");
 					transformer.transform(fuente, resultado);
-
 					System.out.println("Archivo guardado exitosamente.");
 				} else {
 					System.out.println("ERROR: No puede haber menos de 1 elemento raíz.");
