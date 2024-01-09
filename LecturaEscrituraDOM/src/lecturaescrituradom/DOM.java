@@ -123,7 +123,7 @@ public class DOM {
 				System.out.print("\nInserte el nombre del elemento raíz: ");
 				String raiz = sc.nextLine();
 
-				if (!isValidXMLName(raiz)) {
+				if (!nombreXMLValido(raiz)) {
 					System.out.println("ERROR: El nombre del elemento raíz no es válido.");
 					continue;
 				}
@@ -139,8 +139,12 @@ public class DOM {
 						System.out.print("\n¿" + raiz + " tiene elementos hijos? (S/N): ");
 						String tieneHijos = sc.nextLine().toUpperCase();
 
-						if (tieneHijos.equals("S")) {
+						if (tieneHijos.toLowerCase().equals("s")) {
 							insertarElementosHijos(sc, doc, eRaiz);
+						}else if(tieneHijos.toLowerCase().equals("n")) {
+							System.out.print("\nIngrese el contenido para " + raiz + ": ");
+				            String relleno = sc.nextLine();
+				            eRaiz.appendChild(doc.createTextNode(relleno));
 						}
 					}
 
@@ -166,7 +170,7 @@ public class DOM {
 		}
 	}
 
-	private boolean isValidXMLName(String name) {
+	private boolean nombreXMLValido(String name) {
 		if (name == null || name.isEmpty()) {
 			return false;
 		}
